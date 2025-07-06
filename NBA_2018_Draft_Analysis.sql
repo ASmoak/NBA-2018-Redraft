@@ -67,12 +67,12 @@ PlayerValuation AS (
         END AS Position_Difference,
         -- Value Status categorization
         CASE 
-            WHEN Original_Position = 0 AND Redraft_Position <= 30 THEN 'Undrafted Steal'
-            WHEN Original_Position = 0 AND Redraft_Position > 30 THEN 'Undrafted Gem'
-            WHEN Original_Position > Redraft_Position + 30 THEN 'Massive Steal'
-            WHEN Original_Position > Redraft_Position + 15 THEN 'Huge Steal'
-            WHEN Original_Position > Redraft_Position + 5 THEN 'Steal'
-            WHEN Original_Position + 5 < Redraft_Position AND Original_Position > 0 THEN 'Bust'
+            WHEN Original_Position = 0 AND Redraft_Position <= 30 THEN 'MASSIVE UNDRAFTED STEAL'
+            WHEN Original_Position = 0 AND Redraft_Position <= 60 THEN 'UNDRAFTED STEAL'
+            WHEN Original_Position > 20 AND Redraft_Position <= 10 THEN 'HUGE STEAL'
+            WHEN Original_Position > 30 AND Redraft_Position <= 15 THEN 'STEAL'
+            WHEN Original_Position BETWEEN 1 AND 10 AND Redraft_Position > 30 THEN 'MAJOR BUST'
+            WHEN Original_Position BETWEEN 1 AND 5 AND Redraft_Position > 20 THEN 'BUST'
             ELSE 'Expected Value'
         END AS Value_Status,
         -- Position Change calculation
@@ -112,25 +112,26 @@ FROM PlayerValuation
 GROUP BY Value_Status
 ORDER BY 
     CASE Value_Status
-        WHEN 'Massive Steal' THEN 1
-        WHEN 'Huge Steal' THEN 2
-        WHEN 'Steal' THEN 3
-        WHEN 'Expected Value' THEN 4
-        WHEN 'Undrafted Steal' THEN 5
-        WHEN 'Undrafted Gem' THEN 6
-        ELSE 7
+        WHEN 'MASSIVE UNDRAFTED STEAL' THEN 1
+        WHEN 'HUGE STEAL' THEN 2
+        WHEN 'UNDRAFTED STEAL' THEN 3
+        WHEN 'STEAL' THEN 4
+        WHEN 'Expected Value' THEN 5
+        WHEN 'BUST' THEN 6
+        WHEN 'MAJOR BUST' THEN 7
+        ELSE 8
     END;
 
 -- Team analysis with value status breakdown
 SELECT 
     Team,
     COUNT(*) AS TotalPlayers,
-    SUM(CASE WHEN Value_Status = 'Massive Steal' THEN 1 ELSE 0 END) AS MassiveSteals,
-    SUM(CASE WHEN Value_Status = 'Huge Steal' THEN 1 ELSE 0 END) AS HugeSteals,
-    SUM(CASE WHEN Value_Status = 'Steal' THEN 1 ELSE 0 END) AS Steals,
-    SUM(CASE WHEN Value_Status = 'Undrafted Steal' THEN 1 ELSE 0 END) AS UndraftedSteals,
-    SUM(CASE WHEN Value_Status = 'Undrafted Gem' THEN 1 ELSE 0 END) AS UndraftedGems,
-    SUM(CASE WHEN Value_Status = 'Bust' THEN 1 ELSE 0 END) AS Busts,
+    SUM(CASE WHEN Value_Status = 'MASSIVE UNDRAFTED STEAL' THEN 1 ELSE 0 END) AS MassiveUndraftedSteals,
+    SUM(CASE WHEN Value_Status = 'HUGE STEAL' THEN 1 ELSE 0 END) AS HugeSteals,
+    SUM(CASE WHEN Value_Status = 'UNDRAFTED STEAL' THEN 1 ELSE 0 END) AS UndraftedSteals,
+    SUM(CASE WHEN Value_Status = 'STEAL' THEN 1 ELSE 0 END) AS Steals,
+    SUM(CASE WHEN Value_Status = 'MAJOR BUST' THEN 1 ELSE 0 END) AS MajorBusts,
+    SUM(CASE WHEN Value_Status = 'BUST' THEN 1 ELSE 0 END) AS Busts,
     ROUND(AVG(NormalizedImpactScore), 2) AS AvgNormalizedImpact,
     -- Add player with highest normalized impact score
     (
