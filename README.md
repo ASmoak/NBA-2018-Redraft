@@ -9,17 +9,19 @@ This project provides a comprehensive analysis of the 2018 NBA Draft class, eval
 - **Redraft Rankings**: See how players should have been drafted based on their career performance
 - **Impact Scores**: Both raw and normalized (1-100 scale) impact scores for each player
 - **Value Assessment**: Categorization of players into:
-  - Massive Steal (30+ spots better than draft position)
-  - Huge Steal (15-29 spots better)
-  - Steal (6-14 spots better)
-  - Expected Value (within 5 spots of draft position)
-  - Bust (5+ spots worse than draft position)
-  - Undrafted Steal/Gem (for undrafted players performing at a high level)
+  - `MASSIVE UNDRAFTED STEAL`: Undrafted players redrafted in top 30
+  - `UNDRAFTED STEAL`: Undrafted players redrafted in top 60
+  - `HUGE STEAL`: Originally drafted after 20, redrafted in top 10
+  - `STEAL`: Originally drafted after 30, redrafted in top 15
+  - `MAJOR BUST`: Top 10 picks that fell beyond 30 in redraft
+  - `BUST`: Top 5 picks that fell beyond 20 in redraft
+  - `Expected Value`: All other players
 
 ### Team Analysis
 - Draft performance metrics by team
 - Count of steals, busts, and value picks per team
 - Average impact scores by team
+- Top impact player for each team
 
 ## Database Schema
 
@@ -69,13 +71,17 @@ The main analysis is contained in the SQL script, which includes several key que
 
 ## Impact Score Calculation
 
-Player impact is calculated using a weighted formula that considers:
-- Points per game (1.0x)
-- Rebounds per game (1.2x)
-- Assists per game (1.5x)
-- Steals per game (3.0x)
-- Blocks per game (3.0x)
-- Shooting percentages (scaled appropriately)
+Player impact is calculated using a weighted formula based on career totals that considers:
+- Total points (1.0x)
+- Total rebounds (1.2x)
+- Total assists (1.5x)
+- Total steals (3.0x)
+- Total blocks (3.0x)
+- Turnovers (-1.0x penalty)
+- Field goal percentage (100x)
+- Free throw percentage (50x)
+- 3-point percentage (50x)
+- Games played multiplier (G/500) to account for career length
 
 ## License
 
