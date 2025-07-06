@@ -1,0 +1,22 @@
+# Ignore database files
+*.mdf
+*.ldf
+*.bak
+*.sqlite
+
+# Ignore editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore environment files
+.env
+*.env
+
+# Ignore system files
+.DS_Store
+Thumbs.db
